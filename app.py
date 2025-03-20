@@ -54,17 +54,18 @@ if prompt and api_key:
     llm = ChatGroq(groq_api_key=api_key, model_name="Llama3-8b-8192", streaming=True)
     tools = [search, arxiv, wiki]
 
+    # Note: using the correct parameter name "handle_parsing_errors" here.
     search_agent = initialize_agent(
         tools,
         llm,
         agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        handling_parsing_errors=True
+        handle_parsing_errors=True
     )
 
     try:
         with st.chat_message("assistant"):
             st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-            # Pass the new prompt (instead of the entire conversation history)
+            # Passing the new prompt (a string) to the agent
             response = search_agent.run(prompt, callbacks=[st_cb])
             st.session_state["messages"].append({"role": "assistant", "content": response})
             st.write(response)
